@@ -1,6 +1,6 @@
 /* ==========================================================
-   WOFA AI FRONTEND CORE (Future-Ready v2 - 2026)
-   Clean • Stable • Auth-Ready • Production Safe
+   WOFA AI FRONTEND CORE (Teaching Restored Version - 2026)
+   Clean • Structured • Lesson Auto-Teach Restored
    ========================================================== */
 
 /* =========================
@@ -8,25 +8,14 @@
    ========================= */
 let isSending = false;
 let autoSpeakEnabled = true;
-let wakeLock = null;
+let lessonTriggered = false;
 
 /* =========================
-   DOM REFERENCES (SAFE)
+   DOM REFERENCES
    ========================= */
 const chatBox = document.getElementById("chatBox");
 const input = document.getElementById("questionInput");
-const darkToggle = document.getElementById("darkToggle");
-
-const languageSelector = document.getElementById("languageSelector");
-const voiceTypeSelector = document.getElementById("voiceTypeSelector");
 const autoSpeakToggleBtn = document.getElementById("autoSpeakToggleBtn");
-
-const chatHistoryList = document.getElementById("chatHistoryList");
-const newChatBtn = document.getElementById("newChatBtn");
-const chatSearchInput = document.getElementById("chatSearchInput");
-
-const exportTxtBtn = document.getElementById("exportTxtBtn");
-const exportPdfBtn = document.getElementById("exportPdfBtn");
 
 /* =========================
    CONFIG
@@ -41,8 +30,6 @@ const API_BASE_URL =
 const STORAGE_KEY_ALL_CHATS = "wofaChatConversations";
 const STORAGE_KEY_ACTIVE_CHAT_ID = "wofaActiveChatId";
 const STORAGE_KEY_AUTOSPEAK = "wofaAutoSpeakEnabled";
-const STORAGE_KEY_LANGUAGE = "wofaSelectedLanguage";
-const STORAGE_KEY_VOICE = "wofaSelectedVoice";
 
 /* =========================
    UTILITIES
@@ -60,26 +47,6 @@ function scrollToBottom() {
 
 function generateId() {
   return "chat_" + Date.now() + "_" + Math.random().toString(36).substring(2);
-}
-
-/* =========================
-   WAKE LOCK
-   ========================= */
-async function enableWakeLock() {
-  try {
-    if ("wakeLock" in navigator) {
-      wakeLock = await navigator.wakeLock.request("screen");
-    }
-  } catch {}
-}
-
-async function disableWakeLock() {
-  try {
-    if (wakeLock) {
-      await wakeLock.release();
-      wakeLock = null;
-    }
-  } catch {}
 }
 
 /* =========================
@@ -128,12 +95,11 @@ function createNewChat(title = "New Conversation") {
   saveAllChats(chats);
   setActiveChatId(newChat.id);
 
-  renderChatHistory();
   renderActiveChat();
 }
 
 /* =========================
-   RENDERING
+   RENDER CHAT
    ========================= */
 function renderActiveChat() {
   if (!chatBox) return;
@@ -145,7 +111,7 @@ function renderActiveChat() {
     chatBox.innerHTML = `
       <div class="message ai">
         <strong>Hello 👋 I’m WOFA AI</strong><br><br>
-        Ask me anything to begin learning.
+        Select a lesson or ask me anything to begin learning.
       </div>
     `;
     return;
@@ -154,35 +120,23 @@ function renderActiveChat() {
   chat.messages.forEach(msg => {
     const div = document.createElement("div");
     div.className = "message " + msg.role;
-    div.innerHTML = sanitizeHTML(msg.message).replace(/\n/g, "<br>");
+    div.innerHTML = formatMessage(msg.message);
     chatBox.appendChild(div);
   });
 
   scrollToBottom();
 }
 
-function renderChatHistory(search = "") {
-  if (!chatHistoryList) return;
+/* =========================
+   FORMAT MESSAGE (Clean Outline)
+   ========================= */
+function formatMessage(text) {
+  let clean = sanitizeHTML(text);
 
-  chatHistoryList.innerHTML = "";
+  // Remove markdown headings from outline
+  clean = clean.replace(/^##\s*/gm, "");
 
-  getAllChats()
-    .filter(c =>
-      c.title.toLowerCase().includes(search.toLowerCase())
-    )
-    .forEach(chat => {
-      const item = document.createElement("div");
-      item.className = "chat-history-item";
-      item.textContent = chat.title;
-
-      item.onclick = () => {
-        setActiveChatId(chat.id);
-        renderChatHistory(chatSearchInput?.value || "");
-        renderActiveChat();
-      };
-
-      chatHistoryList.appendChild(item);
-    });
+  return clean.replace(/\n/g, "<br>");
 }
 
 /* =========================
@@ -204,7 +158,7 @@ function saveMessage(role, message) {
 function addUserMessage(text) {
   const div = document.createElement("div");
   div.className = "message user";
-  div.innerHTML = sanitizeHTML(text).replace(/\n/g, "<br>");
+  div.innerHTML = formatMessage(text);
   chatBox.appendChild(div);
 
   saveMessage("user", text);
@@ -214,67 +168,65 @@ function addUserMessage(text) {
 function addAIMessage(text) {
   const div = document.createElement("div");
   div.className = "message ai";
-  div.innerHTML = sanitizeHTML(text).replace(/\n/g, "<br>");
+  div.innerHTML = formatMessage(text);
   chatBox.appendChild(div);
 
   saveMessage("ai", text);
   scrollToBottom();
-
-  if (autoSpeakEnabled) speak(text);
 }
 
 /* =========================
-   SPEECH SYSTEM
+   PROMPT BUILDERS
    ========================= */
-function speak(text) {
-  if (!text) return;
+function buildTeachingPrompt(topic) {
+  return `
+You are WOFA AI teacher.
 
-  speechSynthesis.cancel();
-  enableWakeLock();
+IMPORTANT RULES:
 
-  const cleaned = text
-    .replace(/\*\*/g, "")
-    .replace(/\*/g, "")
-    .replace(/```[\s\S]*?```/g, "");
+1. First generate exactly 10 lesson outline points.
+2. DO NOT use markdown symbols like ## in outline.
+3. Use clean numbering format:
+   1. Title
+   1.1 Subpoint
+   1.2 Subpoint
+4. After outline, begin teaching section.
+5. Teaching section may use explanation symbols.
+6. Keep outline clean and professional.
+7. No emojis in outline.
 
-  const utter = new SpeechSynthesisUtterance(cleaned);
-  utter.lang = localStorage.getItem(STORAGE_KEY_LANGUAGE) || "en-US";
-  utter.rate = 0.8;
-  utter.pitch = 0.9;
-  utter.volume = 1;
-
-  utter.onend = disableWakeLock;
-  utter.onerror = disableWakeLock;
-
-  speechSynthesis.speak(utter);
+Topic:
+${topic}
+  `;
 }
-
-window.stopSpeaking = () => {
-  speechSynthesis.cancel();
-  disableWakeLock();
-};
 
 /* =========================
    SEND QUESTION
    ========================= */
-async function sendQuestion() {
+async function sendQuestion(forceTeach = false) {
   if (isSending || !input) return;
 
   const question = input.value.trim();
-  if (!question) return;
+  if (!question && !forceTeach) return;
 
   if (!getActiveChat()) createNewChat();
 
-  addUserMessage(question);
+  const finalQuestion = question || "Begin teaching selected lesson.";
+
+  addUserMessage(finalQuestion);
   input.value = "";
 
   isSending = true;
+
+  const prompt = forceTeach
+    ? buildTeachingPrompt(finalQuestion)
+    : finalQuestion;
 
   try {
     const res = await fetch(`${API_BASE_URL}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question })
+      body: JSON.stringify({ question: prompt })
     });
 
     const data = await res.json();
@@ -289,47 +241,37 @@ async function sendQuestion() {
 window.sendQuestion = sendQuestion;
 
 /* =========================
-   AUTOSPEAK
+   AUTO TEACH WHEN LESSON CLICKED
    ========================= */
-function toggleAutoSpeak() {
-  autoSpeakEnabled = !autoSpeakEnabled;
-  localStorage.setItem(STORAGE_KEY_AUTOSPEAK, autoSpeakEnabled);
-  if (autoSpeakToggleBtn) {
-    autoSpeakToggleBtn.textContent = autoSpeakEnabled
-      ? "🔊 Auto Speak: ON"
-      : "🔇 Auto Speak: OFF";
-  }
-}
-window.toggleAutoSpeak = toggleAutoSpeak;
+window.autoTeachLesson = function(courseTitle, lessonTitle) {
+  lessonTriggered = true;
+
+  const topic = lessonTitle || courseTitle;
+  if (!topic) return;
+
+  if (!getActiveChat())
+    createNewChat("Lesson: " + topic);
+
+  input.value = topic;
+  sendQuestion(true);
+};
 
 /* =========================
-   EXPORT
+   ENTER KEY SEND
    ========================= */
-if (exportTxtBtn) {
-  exportTxtBtn.onclick = () => {
-    const chat = getActiveChat();
-    if (!chat) return;
-
-    let content = "WOFA AI Conversation\n\n";
-    chat.messages.forEach(m => {
-      content += `${m.role.toUpperCase()}:\n${m.message}\n\n`;
-    });
-
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "wofa_chat.txt";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+if (input) {
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendQuestion(false);
+    }
+  });
 }
 
 /* =========================
    INIT
    ========================= */
 document.addEventListener("DOMContentLoaded", () => {
-
   autoSpeakEnabled =
     localStorage.getItem(STORAGE_KEY_AUTOSPEAK) !== "false";
 
@@ -337,7 +279,5 @@ document.addEventListener("DOMContentLoaded", () => {
   else if (!getActiveChatId())
     setActiveChatId(getAllChats()[0].id);
 
-  renderChatHistory();
   renderActiveChat();
-
 });
