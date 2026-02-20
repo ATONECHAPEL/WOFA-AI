@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="WOFA AI Chat History - View and manage old conversations." />
+  <title>WOFA AI - Chat History</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <div class="app-wrapper">
+
+    <!-- =========================
+         NAV BAR
+         ========================= -->
+    <nav class="nav-bar" aria-label="Main navigation">
+      <div class="nav-container">
+
+        <a href="index.html" class="nav-brand">
+          <img src="assets/logo.png" alt="WOFA AI Logo" class="nav-logo floating-logo" />
+          <span class="nav-title">WOFA AI</span>
+        </a>
+
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="login.html" class="nav-link">Exit</a>
+        </div>
+
+        <button id="darkToggle" class="theme-toggle" title="Toggle Theme">
+          🌙
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- =========================
+         MAIN CONTENT
+         ========================= -->
+    <main class="main-content" style="grid-template-columns: 1fr;">
+
+      <!-- =========================
+           CHAT HISTORY FULL PAGE
+           ========================= -->
+      <section class="chat-history-panel" style="width: 100%;">
+
+        <h2>🕘 Chat History</h2>
+        <p>Search and open your previous WOFA AI conversations</p>
+
+        <input
+          type="text"
+          id="chatSearchInput"
+          class="chat-search"
+          placeholder="Search chats..."
+          autocomplete="off"
+        />
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+          
+          <button id="newChatBtn" class="history-btn new-chat" style="flex: 1;">
+            ➕ New Chat
+          </button>
+
+          <button id="exportTxtBtn" class="history-btn export-txt" style="flex: 1;">
+            📄 Export TXT
+          </button>
+
+          <button id="exportPdfBtn" class="history-btn export-pdf" style="flex: 1;">
+            🖨 Export PDF
+          </button>
+
+        </div>
+
+        <div id="chatHistoryList" class="chat-history-list">
+          <!-- Filled dynamically by script.js -->
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/script.js"></script>
+
+</body>
+</html>

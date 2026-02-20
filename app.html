@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <meta name="description" content="WOFA AI – Intelligent AI learning assistant for structured lessons and smart education support." />
+  <meta name="author" content="WOFA AI" />
+  <meta name="theme-color" content="#2563eb" />
+
+  <title>WOFA AI – Learning System</title>
+
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://wofa-ai-backend.onrender.com" />
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body.fade-in {
+      animation: fadeInApp 0.5s ease-in-out;
+    }
+
+    @keyframes fadeInApp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #backToTopBtn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      display: none;
+      z-index: 9999;
+      padding: 12px 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transition: all 0.3s ease;
+    }
+
+    #backToTopBtn:hover {
+      background: #1d4ed8;
+      transform: translateY(-3px);
+    }
+
+    /* Future Auth Notice (hidden for now) */
+    .future-auth-banner {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="fade-in">
+
+  <div class="app-wrapper">
+
+    <!-- ========================= NAVIGATION ========================= -->
+    <nav class="nav-bar" aria-label="Main Navigation">
+      <div class="nav-container">
+
+        <!-- Logo (Refresh) -->
+        <a href="#" class="nav-brand" onclick="location.reload()" title="Refresh WOFA AI">
+          <img src="assets/logo.png" alt="WOFA AI Logo" class="nav-logo" />
+          <span class="nav-title">WOFA AI</span>
+        </a>
+
+        <div class="nav-actions">
+
+          <!-- Future Auth Placeholder -->
+          <!-- In 7 months this becomes Profile / Logout -->
+          <a href="index.html" class="exit-btn" id="exitBtn">Exit</a>
+
+          <button id="darkToggle" class="theme-toggle" title="Toggle Dark Mode">
+            🌙
+          </button>
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- ========================= MAIN CONTENT ========================= -->
+    <main class="main-content">
+
+      <!-- LEFT PANEL -->
+      <aside class="learning-panel" aria-label="Course Selection Panel">
+        <div class="panel-header">
+          <h2>📘 Courses & Lessons</h2>
+          <p class="panel-subtitle">Select a course → then choose a lesson</p>
+        </div>
+
+        <div class="courses-wrapper">
+          <ul id="coursesList" class="course-list"></ul>
+        </div>
+      </aside>
+
+      <!-- CENTER CHAT -->
+      <section class="chat-section">
+
+        <div class="chat-box" id="chatBox">
+          <div class="message ai">
+            <strong>Hello 👋 I’m WOFA AI</strong><br><br>
+            Ask me anything or select a lesson to begin structured learning.
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="input-group">
+
+            <label class="input-icon" title="Upload Image">
+              📷
+              <input type="file" id="imageInput" accept="image/*" hidden />
+            </label>
+
+            <button class="input-icon" onclick="startVoiceInput()" title="Voice Input">
+              🎤
+            </button>
+
+            <input
+              type="text"
+              id="questionInput"
+              class="chat-input"
+              placeholder="Ask WOFA AI anything..."
+              autocomplete="off"
+            />
+
+            <button class="send-btn" onclick="sendQuestion()">
+              Send
+            </button>
+
+          </div>
+        </div>
+
+        <div class="chat-actions">
+          <button class="action-btn" onclick="readLastAnswer()">🔊 Listen</button>
+          <button class="action-btn" id="autoSpeakToggleBtn" onclick="toggleAutoSpeak()">🔊 Auto Speak</button>
+          <button class="action-btn" onclick="stopSpeaking()">⛔ Stop</button>
+          <button class="action-btn clear-btn" onclick="clearChat()">🧹 Clear</button>
+
+          <select id="languageSelector" class="voice-selector">
+            <option value="en-US">English</option>
+            <option value="fr-FR">French</option>
+            <option value="es-ES">Spanish</option>
+            <option value="de-DE">German</option>
+            <option value="nl-NL">Dutch</option>
+            <option value="pt-PT">Portuguese</option>
+            <option value="tw-GH">Twi</option>
+            <option value="gaa-GH">Ga</option>
+            <option value="ee-GH">Ewe</option>
+          </select>
+
+          <select id="voiceTypeSelector" class="voice-selector">
+            <option value="male">Male Voice</option>
+            <option value="female">Female Voice</option>
+            <option value="child">Child Voice</option>
+          </select>
+        </div>
+
+      </section>
+
+      <!-- RIGHT PANEL -->
+      <aside class="chat-history-panel">
+        <h2>🕘 Chat History</h2>
+        <p>Search and open previous conversations</p>
+
+        <input
+          type="text"
+          id="chatSearchInput"
+          class="chat-search"
+          placeholder="Search chats..."
+          autocomplete="off"
+        />
+
+        <button id="newChatBtn" class="history-btn new-chat">➕ New Chat</button>
+        <button id="exportTxtBtn" class="history-btn export-txt">📄 Export TXT</button>
+        <button id="exportPdfBtn" class="history-btn export-pdf">🖨 Export PDF</button>
+
+        <button class="history-btn reset-small-btn" onclick="resetWOFA()">🔄 Reset System</button>
+
+        <a
+          href="https://wa.me/233508080055"
+          target="_blank"
+          class="history-btn whatsapp-history-btn"
+        >
+          <img src="assets/whatsapp.png" class="whatsapp-icon" alt="WhatsApp" />
+          Contact Us
+        </a>
+
+        <div id="chatHistoryList" class="chat-history-list"></div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- Back To Top -->
+  <button id="backToTopBtn">⬆</button>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/learningPanel.js"></script>
+  <script src="js/script.js"></script>
+
+  <script>
+    /* Back To Top Logic */
+    const backBtn = document.getElementById("backToTopBtn");
+
+    window.addEventListener("scroll", () => {
+      backBtn.style.display = window.scrollY > 200 ? "block" : "none";
+    });
+
+    backBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    /* Lightweight Non-Auth Session Marker (Future Ready) */
+    if (!localStorage.getItem("wofa_session_started")) {
+      localStorage.setItem("wofa_session_started", Date.now());
+    }
+  </script>
+
+</body>
+</html>

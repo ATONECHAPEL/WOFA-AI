@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <meta name="description" content="WOFA AI – Smart Visual Learning Assistant. Learn faster with intelligent step-by-step explanations and personalized AI guidance." />
+  <meta name="keywords" content="WOFA AI, AI Learning, Smart Education, Online Tutor, Digital Learning Assistant" />
+  <meta name="author" content="WOFA AI" />
+
+  <title>WOFA AI – Welcome</title>
+
+  <!-- Favicon (Optional but Recommended) -->
+  <link rel="icon" href="assets/logo.png" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .welcome-container {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(14px);
+      border-radius: 22px;
+      padding: 45px 32px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      transition: transform 0.3s ease;
+    }
+
+    .welcome-container:hover {
+      transform: translateY(-4px);
+    }
+
+    .welcome-logo {
+      width: 130px;
+      margin-bottom: 22px;
+    }
+
+    .welcome-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .welcome-subtitle {
+      font-size: 16px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 20px;
+    }
+
+    .welcome-text {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .start-btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    .small-note {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    @media (max-width: 480px) {
+      .welcome-container {
+        padding: 35px 24px;
+      }
+
+      .welcome-title {
+        font-size: 26px;
+      }
+
+      .welcome-logo {
+        width: 100px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="welcome-container">
+
+    <img src="assets/logo.png" alt="WOFA AI Logo" class="welcome-logo" />
+
+    <h1 class="welcome-title">Welcome to WOFA AI</h1>
+
+    <p class="welcome-subtitle">
+      Your Smart Visual Learning Assistant
+    </p>
+
+    <p class="welcome-text">
+      Learn faster. Understand deeper. Achieve more.
+      <br><br>
+      WOFA AI guides you step-by-step — from beginner level
+      to advanced mastery — with intelligent explanations,
+      structured lessons, and personalized AI support.
+    </p>
+
+    <button class="start-btn" onclick="goToApp()">
+      🚀 Start Learning Now
+    </button>
+
+    <p class="small-note">
+      Powered by Intelligent AI Learning Technology
+    </p>
+
+  </div>
+
+  <script>
+    function goToApp() {
+      // IMPORTANT: Make sure your main system file is named app.html
+      window.location.href = "app.html";
+    }
+  </script>
+
+</body>
+</html>
